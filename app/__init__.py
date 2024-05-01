@@ -1,4 +1,5 @@
 from flask import Flask
+from app import routes
 
 app = Flask(__name__)
 with open('config.json', encoding='utf-8') as f:

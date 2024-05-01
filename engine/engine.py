@@ -1,64 +1,42 @@
-from bag_of_words import BagCreator
-import numpy as np
-from sklearn.decomposition import TruncatedSVD
-from scipy.sparse import csc_matrix,linalg, save_npz,load_npz
-from scipy.sparse.linalg import svds
-from file_parser import FileParser
 import os
+import json
+import numpy as np
+from scipy.sparse import load_npz
+from processing.file_parser import FileParser
+from file_creators.bag_creator import BagCreator
 
 
 
 class SearchEngine():
-    def __init__(self, dir_path='wiki_data', jsonpath = 'search_files/terms.json'):
-        self.json_term = jsonpath
-        self.bag = BagCreator(dir_path,jsonpath)
-        self.parser = FileParser(dir_path)
-        self.files = os.listdir(dir_path)
+    def __init__(self, matrix_path = 'app_data/matrixes', dict_path = 'app_data/dicts'):
+        self.matrix = load_npz(f'{matrix_path}/term_by_document.npz')
+        self.u = np.load(f'{matrix_path}/u.npy')
+        self.s = np.load(f'{matrix_path}/s.npy')
+        self.v = np.load(f'{matrix_path}/v.npy')
+        self.files = sorted(os.listdir('app_data/documents'))
+        self.file_parser = FileParser()
+        self.bag_creator = BagCreator()
+        with open(f'{dict_path}/files.json', 'r') as file:
+            self.file_dict = json.load(file)
 
-    def start_engine_bag(self):
-        bag_of_words, IDF = self.bag.create_matrix()
-        save_npz('resources/bag_of_words.npz',bag_of_words)
-        np.save('resources/IDF.npy',IDF)
 
-    def start_engine_lowrank(self):
-        bag_of_words = load_npz('resources/bag_of_words.npz')
-        A, V = self.lowrank(bag_of_words)
-        save_npz('resources/A.npz', A)
-        save_npz('resources/V.npz', V)
-
-    def solve(self, query,number):
-        bag_of_words = load_npz('resources/bag_of_words.npz')
-        IDF = np.load('resources/IDF.npy')
-        words = self.parser.parse_file(query)
-        q = self.bag.create_bag(words=words.split())
+    def process_query(self, query):
+        query = self.file_parser.parse_file(query)
+        q = self.bag_creator.create_bag(query)
+        q = np.array(q)
         q = q / np.linalg.norm(q)
-        q = csc_matrix(q)
-        print(bag_of_words.shape)
-        result = q @ bag_of_words
-        print(result)
-        articles_idx = np.argpartition(result, result.size - number)[-number:]
-        return zip(articles_idx[np.argsort(result[articles_idx])][::-1], result[articles_idx[np.argsort(result[articles_idx])][::-1]])
+        return q
 
-        
+    def solve(self,query, number_of_results=10):
+        query_vector = self.process_query(query)
+        result = query_vector @ self.matrix
+        articles_idx = np.argpartition(result, result.size - number_of_results)[-number_of_results:]
+        for idx in articles_idx:
+            print(self.file_dict[str(idx)])
+        return articles_idx
 
-    def solve_lowrank(self, query, number):
-        A = load_npz('resources/A.npz')
-        V = load_npz('resources/V.npz')
-        bag_of_words = load_npz('resources/bag_of_words.npz')
-        IDF = np.load('resources/IDF.npy')
-        words = self.parser.parse_file(query)
-        q = self.bag.create_bag(words=words.split())@ IDF
-        q = q / np.linalg.norm(q)
-        sim = A.dot(V.dot(q.T))
-        sorted_indices = np.argsort(sim.data)
-        sorted_indices = sorted_indices[::-1]
-        top_10_indices = sorted_indices[:10]
-        ulr_links = ['https://en.wikipedia.org/wiki/'+ os.path.splitext(self.files[i])[0] for i in top_10_indices]
-        return ulr_links
-    
-    def lowrank(self,A, k=250):
-        u, s, v = svds(A, k)
-        s = np.diag(s)
-        A = csc_matrix(u)
-        V = csc_matrix(s.dot(v))
-        return A,V
+    def solve_SVD(query, number_of_results=10):
+        query_vector = self.process_query(query)
+        q = ((query_vector@self.u)@np.diag(self.s))@self.V
+        result = sorted(enumerate(q), key=lambda x: x[1], reverse=True)
+        return result[:results_num]
