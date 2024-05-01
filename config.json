@@ -1,0 +1,7 @@
+{
+    "MAX_PAGES": 100000,
+    "BAG_OF_WORDS": 50000,
+    "LIST_OF_CRAWLS": ["https://en.wikipedia.org/wiki/Tornado",
+                        "https://en.wikipedia.org/wiki/Mieszko_I",
+                        "https://en.wikipedia.org/wiki/Algorithm"]
+}

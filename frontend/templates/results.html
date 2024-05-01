@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Strona domowa</title>
+    <style>
+        .center {
+            text-align: center;
+            margin-top: 20vh; 
+        }
+        input[type="text"] {
+            width: 250px; 
+            padding: 10px;
+            font-size: 16px; 
+        }
+        h1 {
+            font-size: 40px; 
+        }
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="center"> 
+        <h1>Welcome to search engine!</h1>
+        <form action="/" method="POST">
+            <input type="text" name="query" placeholder="Search...">
+            <input type="submit" value="Szukaj">
+        </form>
+        <table>
+            <tr>
+                <th>Wyniki wyszukiwania</th>
+            </tr>
+            {% for url in results %}
+            <tr>
+                <td><a href="{{ url }}">{{ url }}</a></td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</body>
+</html>
