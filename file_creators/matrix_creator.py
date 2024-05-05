@@ -21,24 +21,22 @@ class MatrixCreator():
         file_dict = dict()
         files = os.listdir(self.document_path)
         for file in files:
-            number += 1
-            if number > 5000:
-                break
             with open(f'{self.document_path}/{file}', 'r', encoding='utf-8') as f:
                 bag = self.bag_creator.create_bag(f.read())
             for i in range(len(bag)):
                 if bag[i] > 0:
                     matrix_elements.append([i, files.index(file), bag[i]])
             file_dict[number] = file
+            number += 1
         rows,cols,vals = zip(*matrix_elements)
-        matrix = sparse.csc_matrix((vals, (rows, cols)), shape = (self.terms_number, 5000))
+        matrix = sparse.csc_matrix((vals, (rows, cols)), shape = (self.terms_number, len(files)))
         sparse.save_npz(f'{self.matrix_path}/term_by_document.npz', matrix)
         with open(f'{self.dict_path}/files.json', 'w') as file:
             json.dump(file_dict, file)
         
     def create_SVD(self):
-        matrix = sparse.load_npz(f'{self.document_path}/term_by_document.npz')
-        u, s, v = svds(matrix, k=250)
+        matrix = sparse.load_npz(f'{self.matrix_path}/term_by_document.npz')
+        u, s, v = svds(matrix, k=30)
         np.save(f'{self.matrix_path}/u.npy', u)
         np.save(f'{self.matrix_path}/s.npy', s)
         np.save(f'{self.matrix_path}/v.npy', v)

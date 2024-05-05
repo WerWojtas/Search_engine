@@ -12,17 +12,17 @@ class FileParser():
 
     def parse(self):
         files = os.listdir(self.dir_path)
-        number = 0
         for file in files:
-            number+=1
-            if number > 5000:
-                break
             filepath = f'{self.dir_path}/{file}'
             new_filepath = f'{self.parse_path}/{file}'
-            with open(filepath, 'r', encoding='utf-8') as f:
-                text = self.parse_file(f.read())
-            with open(new_filepath, 'w', encoding='utf-8') as f:
-                f.write(text)
+            try:
+                with open(filepath, 'r', encoding='utf-8') as f:
+                    text = self.parse_file(f.read())
+                with open(new_filepath, 'w', encoding='utf-8') as f:
+                    f.write(text)
+            except UnicodeDecodeError:
+                os.remove(filepath)
+                
 
     def parse_file(self,text):
         text = text.lower()
