@@ -4,11 +4,13 @@ import numpy as np
 
 
 class BagCreator():
-    def __init__(self,document_path='app_data/documents',terms_path='app_data/dicts/terms.json', index_path='app_data/dicts/indexes.json'):
-        with open(terms_path, 'r') as file:
+    def __init__(self,document_path='app_data/documents',dict_path='app_data/dicts'):
+        with open(f'{dict_path}/terms.json', 'r') as file:
             self.terms = json.load(file)
-        with open(index_path, 'r') as file:
+        with open(f'{dict_path}/indexes.json', 'r') as file:
             self.indexes = json.load(file)
+        with open(f'{dict_path}/reversed_indexes.json') as file:
+            self.reversed_indexes = json.load(file)
         self.files_number = len(os.listdir(document_path))
         self.IDF = self.create_IDF()
 
@@ -17,7 +19,7 @@ class BagCreator():
         text = text.split(" ")
         for word in text:
             if word in self.terms:
-                bag[self.terms[word]] += 1
+                bag[self.reversed_indexes[word]] += 1
         return [bag[i]*self.IDF[i] for i in range(len(bag))]
 
     def create_IDF(self):

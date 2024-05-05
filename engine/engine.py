@@ -31,12 +31,19 @@ class SearchEngine():
         query_vector = self.process_query(query)
         result = query_vector @ self.matrix
         articles_idx = np.argpartition(result, result.size - number_of_results)[-number_of_results:]
-        for idx in articles_idx:
-            print(self.file_dict[str(idx)])
-        return articles_idx
+        return self.return_urls(articles_idx)
 
-    def solve_SVD(query, number_of_results=10):
+    def solve_SVD(self,query, number_of_results=10):
         query_vector = self.process_query(query)
-        q = ((query_vector@self.u)@np.diag(self.s))@self.V
-        result = sorted(enumerate(q), key=lambda x: x[1], reverse=True)
-        return result[:results_num]
+        result = ((query_vector @ self.u) @ np.diag(self.s)) @ self.v
+        articles_idx = np.argpartition(result, result.size - number_of_results)[-number_of_results:]
+        return self.return_urls(articles_idx)
+
+    def return_urls(self, article_idx):
+        results = []
+        for idx in article_idx:
+            filename = self.file_dict[str(idx)]
+            filename = filename.strip('.html')
+            url = 'https://en.wikipedia.org/wiki/' + filename
+            results.append(url)
+        return results

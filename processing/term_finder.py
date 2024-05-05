@@ -13,11 +13,7 @@ class TermUnionFinder():
     def find_terms(self):
         term_to_files = dict()
         files = os.listdir(self.dir_path)
-        number = 0
         for file in files:
-            number+=1
-            if number > 5000:
-                break
             for line in open(f'{self.dir_path}/{file}', 'r', encoding='utf-8'):
                 for term in line.split():
                     if term not in term_to_files:
@@ -27,12 +23,16 @@ class TermUnionFinder():
         term_to_files = dict(sorted(term_to_files.items(), key=lambda item: item[1], reverse=True))
         first_words = dict(islice(term_to_files.items(), self.bag_number))
         indexes = dict()
+        reversed_indexes = dict()
         for idx, key in enumerate(first_words.keys()):
             indexes[idx] = key
+            reversed_indexes[key] = idx
         with open(f'{self.dict_path}/terms.json', 'w') as file:
             json.dump(first_words, file)
         with open(f'{self.dict_path}/indexes.json', 'w') as file:
             json.dump(indexes, file)
+        with open(f'{self.dict_path}/reversed_indexes.json', 'w') as file:
+            json.dump(reversed_indexes, file)
 
 
 
