@@ -15,8 +15,12 @@ def home():
 def solve():
     query = request.args.get('query')
     method = request.args.get('method')
-    if method == 'normal':
+    if method == 'without':
         results = engine.solve(query)
+    elif method == 'svd_10':
+        results = engine.solve_SVD(query,10)
+    elif method == 'svd_100':
+        results = engine.solve_SVD(query,100)
     else:
-        results = engine.solve_SVD(query)
+        results = engine.solve_SVD(query,500)
     return render_template('results.html', results=results)
