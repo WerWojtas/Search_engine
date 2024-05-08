@@ -48,9 +48,9 @@
             <tr>
                 <th>Wyniki wyszukiwania</th>
             </tr>
-            {% for url, percent in results %}
+            {% for url, percent, filename in results %}
             <tr>
-                <td><a href="{{ url }}">{{ url }}</a> {{ '%.2f' % percent }}%</td>
+                <td><a href="{{ url }}">{{ filename }}</a> {{ '%.2f' % percent }}%</td>
             </tr>
             {% endfor %}
         </table>

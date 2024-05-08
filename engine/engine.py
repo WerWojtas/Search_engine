@@ -71,5 +71,5 @@ class SearchEngine():
             filename = self.file_dict[str(idx)]
             filename = filename[:-5]
             url = 'https://en.wikipedia.org/wiki/' + filename
-            results.append((url,percent))
+            results.append((url,percent,filename))
         return results
