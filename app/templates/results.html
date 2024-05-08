@@ -37,8 +37,10 @@
         <form action="/solve" method="GET">
             <input type="text" name="query" placeholder="Search...">
             <select name="method">
-                <option value="normal">Normal</option>
-                <option value="svd">SVD</option>
+                <option value="without">Without SVD</option>
+                <option value="svd_10">SVD 10</option>
+                <option value="svd_100">SVD 100</option>
+                <option value="svd_500">SVD 500</option>
             </select>
             <input type="submit" value="Szukaj">
         </form>
@@ -46,12 +48,13 @@
             <tr>
                 <th>Wyniki wyszukiwania</th>
             </tr>
-            {% for url in results %}
+            {% for url, percent, filename in results %}
             <tr>
-                <td><a href="{{ url }}">{{ url }}</a></td>
+                <td><a href="{{ url }}">{{ filename }}</a> {{ '%.2f' % percent }}%</td>
             </tr>
             {% endfor %}
         </table>
+        
     </div>
 </body>
 </html>

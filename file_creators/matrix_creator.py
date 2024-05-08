@@ -34,9 +34,9 @@ class MatrixCreator():
         with open(f'{self.dict_path}/files.json', 'w') as file:
             json.dump(file_dict, file)
         
-    def create_SVD(self):
+    def create_SVD(self, k):
         matrix = sparse.load_npz(f'{self.matrix_path}/term_by_document.npz')
-        u, s, v = svds(matrix, k=30)
-        np.save(f'{self.matrix_path}/u.npy', u)
-        np.save(f'{self.matrix_path}/s.npy', s)
-        np.save(f'{self.matrix_path}/v.npy', v)
+        u, s, v = svds(matrix, k=k)
+        np.save(f'{self.matrix_path}/u_{k}.npy', u)
+        np.save(f'{self.matrix_path}/s_{k}.npy', s)
+        np.save(f'{self.matrix_path}/v_{k}.npy', v)
