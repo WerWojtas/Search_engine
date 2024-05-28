@@ -1,4 +1,7 @@
 from installer import Installer
+import compileall
+
+compileall.compile_dir('.', force=True)
 
 
 install = Installer()
