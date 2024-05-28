@@ -23,7 +23,7 @@ class Installer():
 
     def create_matrixes(self):
         matrix_creator = MatrixCreator(self.config['BAG_OF_WORDS'])
-        #matrix_creator.create_matrix()
-        #matrix_creator.create_SVD(10)
-        #matrix_creator.create_SVD(100)
+        matrix_creator.create_matrix()
+        matrix_creator.create_SVD(10)
+        matrix_creator.create_SVD(100)
         matrix_creator.create_SVD(500)
